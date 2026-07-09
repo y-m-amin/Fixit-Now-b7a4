@@ -15,7 +15,7 @@ Backend API for FixItNow, a home services marketplace connecting customers with 
 
 ## Project Status
 
-This is the **core structure**: project scaffolding, database schema, and the full authentication module. Remaining feature modules (technicians, services, bookings, payments, reviews, admin) are stubbed as empty folders under `src/modules/` and will be built out next, following the same pattern as `src/modules/auth`.
+All core modules are implemented: **auth, categories, technicians, services, bookings, payments (Stripe), reviews, and admin.** Postman/Swagger docs and the final 20-commit polish pass are the remaining deliverables.
 
 ## Project Structure
 
@@ -28,7 +28,8 @@ fixitnow-backend/
 ├── src/
 │   ├── config/
 │   │   ├── env.ts             # Typed environment variable loader
-│   │   └── db.ts              # Prisma client singleton
+│   │   ├── db.ts              # Prisma client singleton
+│   │   └── stripe.ts          # Stripe client singleton
 │   ├── middleware/
 │   │   ├── auth.middleware.ts     # JWT authentication + role-based authorization
 │   │   ├── validate.middleware.ts # Generic Zod request validator
@@ -40,11 +41,14 @@ fixitnow-backend/
 │   │   ├── jwt.ts             # Sign/verify JWT
 │   │   └── password.ts        # Hash/compare passwords
 │   ├── modules/
-│   │   └── auth/               # register, login, me
-│   │       ├── auth.controller.ts
-│   │       ├── auth.service.ts
-│   │       ├── auth.routes.ts
-│   │       └── auth.validation.ts
+│   │   ├── auth/               # register, login, me
+│   │   ├── categories/         # public listing, admin creation
+│   │   ├── technicians/        # public browsing, profile & availability self-management
+│   │   ├── services/           # public listing, technician CRUD for own listings
+│   │   ├── bookings/           # create, list, detail, cancel, technician status transitions
+│   │   ├── payments/           # Stripe payment intents + webhook confirmation, history
+│   │   ├── reviews/            # post-completion reviews, technician rating rollups
+│   │   └── admin/               # user management, all-bookings view, categories
 │   ├── app.ts                 # Express app, middleware, route mounting
 │   └── server.ts               # Entrypoint, graceful shutdown
 ├── .env.example
@@ -122,21 +126,89 @@ Error:
 }
 ```
 
-## Auth Endpoints (implemented)
+## API Endpoints
 
+### Auth
 | Method | Endpoint            | Description                          | Auth required |
 |--------|----------------------|---------------------------------------|----------------|
 | POST   | `/api/auth/register`  | Register as customer or technician    | No             |
 | POST   | `/api/auth/login`     | Login, returns JWT                    | No             |
 | GET    | `/api/auth/me`        | Get current authenticated user        | Yes            |
 
-Send the JWT as `Authorization: Bearer <token>` on authenticated routes.
+### Public browsing
+| Method | Endpoint               | Description                              |
+|--------|-------------------------|--------------------------------------------|
+| GET    | `/api/categories`        | List service categories                    |
+| GET    | `/api/technicians`       | List technicians (filter: category, location, minRating) |
+| GET    | `/api/technicians/:id`   | Technician profile with services & reviews |
+| GET    | `/api/services`          | List services (filter: category, location, minRating, maxPrice) |
+
+### Technician self-management (role: TECHNICIAN)
+| Method | Endpoint                        | Description                        |
+|--------|-----------------------------------|--------------------------------------|
+| PUT    | `/api/technician/profile`         | Update bio, experience, rate, skills |
+| PUT    | `/api/technician/availability`    | Replace weekly availability slots    |
+| POST   | `/api/technician/services`        | Create a service listing             |
+| PUT    | `/api/technician/services/:id`    | Update own service listing           |
+| DELETE | `/api/technician/services/:id`    | Delete own service listing           |
+| GET    | `/api/technician/bookings`        | List incoming bookings               |
+| PATCH  | `/api/technician/bookings/:id`    | Accept / decline / start / complete a booking |
+
+### Bookings (authenticated)
+| Method | Endpoint                    | Description                                  |
+|--------|-------------------------------|-------------------------------------------------|
+| POST   | `/api/bookings`                | Create booking (role: CUSTOMER)                 |
+| GET    | `/api/bookings`                | List your own bookings (customer or technician) |
+| GET    | `/api/bookings/:id`            | Booking detail (owner or admin)                 |
+| PATCH  | `/api/bookings/:id/cancel`     | Cancel booking (role: CUSTOMER, before IN_PROGRESS) |
+
+### Payments — Stripe test mode (authenticated)
+| Method | Endpoint                | Description                                    |
+|--------|---------------------------|---------------------------------------------------|
+| POST   | `/api/payments/create`     | Create a Stripe PaymentIntent for an ACCEPTED booking |
+| POST   | `/api/payments/confirm`    | Stripe webhook — marks payment COMPLETED, booking PAID |
+| GET    | `/api/payments`            | Your payment history                              |
+| GET    | `/api/payments/:id`        | Payment detail (owner or admin)                   |
+
+### Reviews (role: CUSTOMER)
+| Method | Endpoint          | Description                                  |
+|--------|---------------------|--------------------------------------------------|
+| POST   | `/api/reviews`       | Review a COMPLETED booking; rolls up technician rating |
+
+### Admin (role: ADMIN)
+| Method | Endpoint                       | Description                       |
+|--------|----------------------------------|--------------------------------------|
+| GET    | `/api/admin/users`               | List all users (filter: role, status) |
+| PATCH  | `/api/admin/users/:id`           | Ban / unban a user                   |
+| GET    | `/api/admin/bookings`            | List all bookings (filter: status)   |
+| GET    | `/api/admin/categories`          | List all categories                  |
+| POST   | `/api/admin/categories`          | Create a new category                |
+
+Send the JWT as `Authorization: Bearer <token>` on any authenticated route.
+
+## Booking Status Flow
+
+```
+REQUESTED → ACCEPTED → PAID → IN_PROGRESS → COMPLETED
+         ↘ DECLINED
+
+Customer can CANCEL at any point before IN_PROGRESS.
+```
+
+`ACCEPTED`/`DECLINED` are set by the technician. `PAID` is set automatically by the Stripe webhook once payment succeeds — no client can set it directly. `IN_PROGRESS`/`COMPLETED` are set by the technician.
+
+## Stripe Setup (test mode)
+
+1. Get your test secret key from the [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys) and put it in `STRIPE_SECRET_KEY`.
+2. For local webhook testing, install the [Stripe CLI](https://stripe.com/docs/stripe-cli), run `stripe login`, then:
+   ```bash
+   stripe listen --forward-to localhost:5000/api/payments/confirm
+   ```
+3. Copy the `whsec_...` value it prints into `STRIPE_WEBHOOK_SECRET`.
 
 ## Next Steps
 
-- Categories & Services (public browse + technician management)
-- Bookings (create, status transitions, cancellation rules)
-- Payments (Stripe integration, payment history)
-- Reviews (post-completion, technician rating rollups)
-- Admin (user management, category moderation, all-bookings view)
-- Postman/Swagger API documentation
+- Postman collection / Swagger (OpenAPI) documentation covering all endpoints
+- SSLCommerz integration (currently stubbed — returns a clear error if selected as payment method)
+- Automated tests
+
