@@ -6,8 +6,9 @@ import { env } from './config/env';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware';
 
 import authRoutes from './modules/auth/auth.routes';
+import categoryRoutes from './modules/categories/categories.routes';
 // Additional module routes (technicians, services, bookings, payments,
-// reviews, categories, admin) are mounted here as they're built out.
+// reviews, admin) are mounted here as they're built out.
 
 export function createApp(): Application {
   const app = express();
@@ -23,6 +24,7 @@ export function createApp(): Application {
   });
 
   app.use('/api/auth', authRoutes);
+  app.use('/api/categories', categoryRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
