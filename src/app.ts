@@ -7,8 +7,10 @@ import { notFoundHandler, errorHandler } from './middleware/error.middleware';
 
 import authRoutes from './modules/auth/auth.routes';
 import categoryRoutes from './modules/categories/categories.routes';
-// Additional module routes (technicians, services, bookings, payments,
-// reviews, admin) are mounted here as they're built out.
+import technicianPublicRoutes from './modules/technicians/technicians.routes';
+import technicianSelfRoutes from './modules/technicians/technician-self.routes';
+// Additional module routes (services, bookings, payments, reviews, admin)
+// are mounted here as they're built out.
 
 export function createApp(): Application {
   const app = express();
@@ -25,6 +27,8 @@ export function createApp(): Application {
 
   app.use('/api/auth', authRoutes);
   app.use('/api/categories', categoryRoutes);
+  app.use('/api/technicians', technicianPublicRoutes);
+  app.use('/api/technician', technicianSelfRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
