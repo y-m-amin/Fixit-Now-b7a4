@@ -11,8 +11,10 @@ import technicianPublicRoutes from './modules/technicians/technicians.routes';
 import technicianSelfRoutes from './modules/technicians/technician-self.routes';
 import servicePublicRoutes from './modules/services/services.routes';
 import technicianServiceRoutes from './modules/services/technician-services.routes';
-// Additional module routes (bookings, payments, reviews, admin) are
-// mounted here as they're built out.
+import bookingRoutes from './modules/bookings/bookings.routes';
+import technicianBookingRoutes from './modules/bookings/technician-bookings.routes';
+// Additional module routes (payments, reviews, admin) are mounted here
+// as they're built out.
 
 export function createApp(): Application {
   const app = express();
@@ -33,6 +35,8 @@ export function createApp(): Application {
   app.use('/api/technician', technicianSelfRoutes);
   app.use('/api/services', servicePublicRoutes);
   app.use('/api/technician/services', technicianServiceRoutes);
+  app.use('/api/bookings', bookingRoutes);
+  app.use('/api/technician/bookings', technicianBookingRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
