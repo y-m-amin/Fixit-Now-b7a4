@@ -13,14 +13,26 @@ import servicePublicRoutes from './modules/services/services.routes';
 import technicianServiceRoutes from './modules/services/technician-services.routes';
 import bookingRoutes from './modules/bookings/bookings.routes';
 import technicianBookingRoutes from './modules/bookings/technician-bookings.routes';
-// Additional module routes (payments, reviews, admin) are mounted here
-// as they're built out.
+import paymentRoutes from './modules/payments/payments.routes';
+import { confirmPayment } from './modules/payments/payments.controller';
+// Additional module routes (reviews, admin) are mounted here as they're
+// built out.
 
 export function createApp(): Application {
   const app = express();
 
   app.use(helmet());
   app.use(cors({ origin: env.clientUrl, credentials: true }));
+
+  // Stripe webhook needs the raw request body to verify its signature, so
+  // it's registered BEFORE the global JSON parser below and given its own
+  // express.raw() middleware, scoped only to this path.
+  app.post(
+    '/api/payments/confirm',
+    express.raw({ type: 'application/json' }),
+    confirmPayment,
+  );
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan(env.isProd ? 'combined' : 'dev'));
@@ -37,6 +49,7 @@ export function createApp(): Application {
   app.use('/api/technician/services', technicianServiceRoutes);
   app.use('/api/bookings', bookingRoutes);
   app.use('/api/technician/bookings', technicianBookingRoutes);
+  app.use('/api/payments', paymentRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
