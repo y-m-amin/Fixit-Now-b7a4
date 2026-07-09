@@ -15,8 +15,8 @@ import bookingRoutes from './modules/bookings/bookings.routes';
 import technicianBookingRoutes from './modules/bookings/technician-bookings.routes';
 import paymentRoutes from './modules/payments/payments.routes';
 import { confirmPayment } from './modules/payments/payments.controller';
-// Additional module routes (reviews, admin) are mounted here as they're
-// built out.
+import reviewRoutes from './modules/reviews/reviews.routes';
+// Admin module routes are mounted here as they're built out.
 
 export function createApp(): Application {
   const app = express();
@@ -50,6 +50,7 @@ export function createApp(): Application {
   app.use('/api/bookings', bookingRoutes);
   app.use('/api/technician/bookings', technicianBookingRoutes);
   app.use('/api/payments', paymentRoutes);
+  app.use('/api/reviews', reviewRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
