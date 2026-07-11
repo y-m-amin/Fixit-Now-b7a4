@@ -22,11 +22,6 @@ export const env = {
     secretKey: process.env.STRIPE_SECRET_KEY ?? '',
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
   },
-  sslcommerz: {
-    storeId: process.env.SSLCOMMERZ_STORE_ID ?? '',
-    storePassword: process.env.SSLCOMMERZ_STORE_PASSWORD ?? '',
-    isLive: process.env.SSLCOMMERZ_IS_LIVE === 'true',
-  },
   clientUrl: process.env.CLIENT_URL ?? 'http://localhost:3000',
   isProd: process.env.NODE_ENV === 'production',
 };

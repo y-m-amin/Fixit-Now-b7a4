@@ -40,11 +40,6 @@ enum BookingStatus {
   CANCELLED
 }
 
-enum PaymentMethod {
-  STRIPE
-  SSLCOMMERZ
-}
-
 enum PaymentStatus {
   PENDING
   COMPLETED
@@ -165,10 +160,9 @@ model Payment {
   id            String        @id @default(uuid())
   bookingId     String        @unique
   userId        String
-  transactionId String        @unique
+  transactionId String        @unique // Stripe PaymentIntent id
   amount        Decimal       @db.Decimal(10, 2)
-  method        PaymentMethod
-  provider      String? // e.g. "stripe", "sslcommerz"
+  provider      String        @default("stripe")
   status        PaymentStatus @default(PENDING)
   paidAt        DateTime?
   createdAt     DateTime      @default(now())

@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { BookingStatus, PaymentMethod, PaymentStatus, Role } from '@prisma/client';
+import { BookingStatus, PaymentStatus, Role } from '@prisma/client';
 import { prisma } from '../../config/db';
 import { stripe } from '../../config/stripe';
 import { env } from '../../config/env';
@@ -32,11 +32,6 @@ export async function createPaymentForBooking(customerId: string, input: CreateP
     throw ApiError.conflict('A payment already exists for this booking');
   }
 
-  if (input.method === PaymentMethod.SSLCOMMERZ) {
-    // Not yet implemented — Stripe is the fully wired provider for now.
-    throw ApiError.badRequest('SSLCommerz is not yet supported. Use method: "STRIPE".');
-  }
-
   const amount = Number(booking.service.price);
 
   const paymentIntent = await stripe.paymentIntents.create({
@@ -52,7 +47,6 @@ export async function createPaymentForBooking(customerId: string, input: CreateP
       userId: customerId,
       transactionId: paymentIntent.id,
       amount,
-      method: PaymentMethod.STRIPE,
       provider: 'stripe',
       status: PaymentStatus.PENDING,
     },

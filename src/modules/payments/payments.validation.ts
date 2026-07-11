@@ -1,11 +1,9 @@
 import { z } from 'zod';
-import { PaymentMethod } from '@prisma/client';
 
 export const createPaymentSchema = z.object({
   body: z
     .object({
       bookingId: z.string().uuid('Invalid booking id'),
-      method: z.enum([PaymentMethod.STRIPE, PaymentMethod.SSLCOMMERZ]).default(PaymentMethod.STRIPE),
     })
     .strict(),
 });

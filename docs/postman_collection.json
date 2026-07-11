@@ -387,7 +387,7 @@
             "url": { "raw": "{{baseUrl}}/api/payments/create", "host": ["{{baseUrl}}"], "path": ["api", "payments", "create"] },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"bookingId\": \"{{bookingId}}\",\n  \"method\": \"STRIPE\"\n}"
+              "raw": "{\n  \"bookingId\": \"{{bookingId}}\"\n}"
             }
           },
           "event": [
