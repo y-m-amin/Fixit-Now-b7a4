@@ -213,6 +213,25 @@ Customer can CANCEL at any point before IN_PROGRESS.
 
 Import `docs/postman_collection.json` and `docs/postman_environment.json` into Postman. Login/register requests auto-save the JWT into the environment (`token`, `technicianToken`, `adminToken`), and a few "create" requests auto-save IDs (`categoryId`, `serviceId`, `bookingId`, `paymentId`) so you can run requests in sequence without copy-pasting.
 
+## Deploying (Render)
+
+When creating the Web Service on Render, use these exact settings:
+
+| Setting | Value |
+|---------|-------|
+| Build Command | `npm install && npm run build` |
+| Start Command | `npm start` |
+
+`npm install` triggers the `postinstall` script (`prisma generate`) automatically, so the Prisma client is always generated before `npm run build` compiles the TypeScript. **The Build Command must include `npm install`** — if it's just `npm run build` on its own, nothing gets installed and every import will fail with "Cannot find module".
+
+Environment variables to set in Render's dashboard: `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NODE_ENV=production`.
+
+After the first successful deploy, run the migration and seed once via Render's **Shell** tab:
+```bash
+npx prisma migrate deploy
+npm run prisma:seed
+```
+
 ## Next Steps
 
 - Automated tests
