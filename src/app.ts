@@ -1,10 +1,7 @@
-import path from 'path';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import swaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
 import { env } from './config/env';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware';
 
@@ -43,10 +40,6 @@ export function createApp(): Application {
   app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({ success: true, message: 'FixItNow API is healthy', data: null });
   });
-
-  // API documentation — browsable Swagger UI backed by docs/openapi.yaml
-  const openApiDocument = YAML.load(path.join(__dirname, '..', 'docs', 'openapi.yaml'));
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
   app.use('/api/auth', authRoutes);
   app.use('/api/categories', categoryRoutes);
