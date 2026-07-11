@@ -15,7 +15,7 @@ Backend API for FixItNow, a home services marketplace connecting customers with 
 
 ## Project Status
 
-All core modules are implemented: **auth, categories, technicians, services, bookings, payments (Stripe), reviews, and admin.** Postman/Swagger docs and the final 20-commit polish pass are the remaining deliverables.
+All core modules are implemented: **auth, categories, technicians, services, bookings, payments (Stripe), reviews, and admin.** API documentation (Swagger UI + Postman) is also in place.
 
 ## Project Structure
 
@@ -25,6 +25,10 @@ fixitnow-backend/
 │   ├── schema.prisma        # All core models (Users, TechnicianProfiles, Categories,
 │   │                         # Services, AvailabilitySlots, Bookings, Payments, Reviews)
 │   └── seed.ts               # Creates admin user + base categories
+├── docs/
+│   ├── openapi.yaml               # OpenAPI 3.0 spec, served via Swagger UI at /api-docs
+│   ├── postman_collection.json    # Importable Postman collection
+│   └── postman_environment.json   # Companion Postman environment
 ├── src/
 │   ├── config/
 │   │   ├── env.ts             # Typed environment variable loader
@@ -206,9 +210,15 @@ Customer can CANCEL at any point before IN_PROGRESS.
    ```
 3. Copy the `whsec_...` value it prints into `STRIPE_WEBHOOK_SECRET`.
 
+## API Documentation
+
+Two equivalent formats are provided — use whichever fits your workflow:
+
+- **Swagger UI (interactive):** start the server (`npm run dev`) and open `http://localhost:5000/api-docs`. Backed by `docs/openapi.yaml` (OpenAPI 3.0).
+- **Postman collection:** import `docs/postman_collection.json` and `docs/postman_environment.json` into Postman. Login/register requests auto-save the JWT into the environment (`token`, `technicianToken`, `adminToken`), and a few "create" requests auto-save IDs (`categoryId`, `serviceId`, `bookingId`, `paymentId`) so you can run requests in sequence without copy-pasting.
+
 ## Next Steps
 
-- Postman collection / Swagger (OpenAPI) documentation covering all endpoints
 - SSLCommerz integration (currently stubbed — returns a clear error if selected as payment method)
 - Automated tests
 
