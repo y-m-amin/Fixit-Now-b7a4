@@ -2,6 +2,11 @@
 
 Backend API for FixItNow, a home services marketplace connecting customers with technicians (plumbing, electrical, cleaning, painting, etc.).
 
+**Live deployment (Render):** https://fixit-now-b7a4.onrender.com
+**Health check:** https://fixit-now-b7a4.onrender.com/health
+
+> Free-tier note: the service spins down after 15 minutes of inactivity. The first request after idle can take 30-60 seconds to wake up — this is normal, not a bug.
+
 ## Tech Stack
 
 - **Runtime:** Node.js + Express
@@ -27,7 +32,8 @@ fixitnow-backend/
 │   └── seed.ts               # Creates admin user + base categories
 ├── docs/
 │   ├── postman_collection.json    # Importable Postman collection
-│   └── postman_environment.json   # Companion Postman environment
+│   ├── postman_environment.json   # Local dev environment
+│   └── postman_environment.production.json  # Live Render deployment environment
 ├── src/
 │   ├── config/
 │   │   ├── env.ts             # Typed environment variable loader
@@ -207,11 +213,21 @@ Customer can CANCEL at any point before IN_PROGRESS.
    ```bash
    stripe listen --forward-to localhost:5000/api/payments/confirm
    ```
-3. Copy the `whsec_...` value it prints into `STRIPE_WEBHOOK_SECRET`.
+   Copy the `whsec_...` value it prints into `STRIPE_WEBHOOK_SECRET`.
+3. For the live deployment, add a webhook endpoint in the [Stripe Dashboard](https://dashboard.stripe.com/test/webhooks) pointing at:
+   ```
+   https://fixit-now-b7a4.onrender.com/api/payments/confirm
+   ```
+   Select at least `payment_intent.succeeded` and `payment_intent.payment_failed`, then copy that endpoint's signing secret into Render's `STRIPE_WEBHOOK_SECRET` environment variable (this will be a different value from the one the CLI gives you locally).
 
 ## API Documentation
 
-Import `docs/postman_collection.json` and `docs/postman_environment.json` into Postman. Login/register requests auto-save the JWT into the environment (`token`, `technicianToken`, `adminToken`), and a few "create" requests auto-save IDs (`categoryId`, `serviceId`, `bookingId`, `paymentId`) so you can run requests in sequence without copy-pasting.
+Import `docs/postman_collection.json` into Postman, plus **one** of the two environment files depending on what you're testing against:
+
+- `docs/postman_environment.json` — local dev (`http://localhost:5000`)
+- `docs/postman_environment.production.json` — the live Render deployment (`https://fixit-now-b7a4.onrender.com`)
+
+Select the active environment from the dropdown in Postman's top-right corner before running requests. Login/register requests auto-save the JWT into the environment (`token`, `technicianToken`, `adminToken`), and a few "create" requests auto-save IDs (`categoryId`, `serviceId`, `bookingId`, `paymentId`) so you can run requests in sequence without copy-pasting.
 
 ## Deploying (Render)
 
