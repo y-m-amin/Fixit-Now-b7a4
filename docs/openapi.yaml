@@ -517,7 +517,7 @@ paths:
   /api/bookings:
     post:
       tags: [Bookings]
-      summary: Create a booking (role: CUSTOMER)
+      summary: "Create a booking (role: CUSTOMER)"
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
@@ -576,7 +576,7 @@ paths:
   /api/bookings/{id}/cancel:
     patch:
       tags: [Bookings]
-      summary: Cancel a booking (role: CUSTOMER, only before IN_PROGRESS)
+      summary: "Cancel a booking (role: CUSTOMER, only before IN_PROGRESS)"
       security: [{ bearerAuth: [] }]
       parameters:
         - in: path
@@ -636,7 +636,7 @@ paths:
   /api/payments/create:
     post:
       tags: [Payments]
-      summary: Create a Stripe PaymentIntent for an ACCEPTED booking (role: CUSTOMER)
+      summary: "Create a Stripe PaymentIntent for an ACCEPTED booking (role: CUSTOMER)"
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
@@ -706,7 +706,7 @@ paths:
   /api/reviews:
     post:
       tags: [Reviews]
-      summary: Review a COMPLETED booking (role: CUSTOMER)
+      summary: "Review a COMPLETED booking (role: CUSTOMER)"
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
@@ -725,7 +725,7 @@ paths:
   /api/admin/users:
     get:
       tags: [Admin]
-      summary: List all users (role: ADMIN)
+      summary: "List all users (role: ADMIN)"
       security: [{ bearerAuth: [] }]
       parameters:
         - in: query
@@ -745,7 +745,7 @@ paths:
   /api/admin/users/{id}:
     patch:
       tags: [Admin]
-      summary: Ban or unban a user (role: ADMIN)
+      summary: "Ban or unban a user (role: ADMIN)"
       security: [{ bearerAuth: [] }]
       parameters:
         - in: path
@@ -769,7 +769,7 @@ paths:
   /api/admin/bookings:
     get:
       tags: [Admin]
-      summary: List all bookings (role: ADMIN)
+      summary: "List all bookings (role: ADMIN)"
       security: [{ bearerAuth: [] }]
       parameters:
         - in: query
@@ -786,7 +786,7 @@ paths:
   /api/admin/categories:
     get:
       tags: [Admin]
-      summary: List all categories (role: ADMIN)
+      summary: "List all categories (role: ADMIN)"
       security: [{ bearerAuth: [] }]
       responses:
         '200':
@@ -796,7 +796,7 @@ paths:
               schema: { $ref: '#/components/schemas/SuccessEnvelope' }
     post:
       tags: [Admin]
-      summary: Create a new category (role: ADMIN)
+      summary: "Create a new category (role: ADMIN)"
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
