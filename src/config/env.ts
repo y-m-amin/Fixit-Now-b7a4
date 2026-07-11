@@ -22,6 +22,5 @@ export const env = {
     secretKey: process.env.STRIPE_SECRET_KEY ?? '',
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
   },
-  clientUrl: process.env.CLIENT_URL ?? 'http://localhost:3000',
   isProd: process.env.NODE_ENV === 'production',
 };

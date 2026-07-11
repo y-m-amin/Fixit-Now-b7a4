@@ -22,7 +22,10 @@ export function createApp(): Application {
   const app = express();
 
   app.use(helmet());
-  app.use(cors({ origin: env.clientUrl, credentials: true }));
+  // Backend-only API (no dedicated frontend origin to pin CORS to) — open to
+  // any origin so it can be called from Postman, mobile clients, or any
+  // frontend that later consumes this API.
+  app.use(cors());
 
   // Stripe webhook needs the raw request body to verify its signature, so
   // it's registered BEFORE the global JSON parser below and given its own
