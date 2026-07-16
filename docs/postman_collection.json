@@ -396,11 +396,40 @@
               "script": {
                 "exec": [
                   "const data = pm.response.json().data;",
-                  "if (data && data.payment && data.payment.id) { pm.environment.set('paymentId', data.payment.id); }"
+                  "if (data && data.payment && data.payment.id) { pm.environment.set('paymentId', data.payment.id); }",
+                  "if (data && data.payment && data.payment.transactionId) { pm.environment.set('stripePaymentIntentId', data.payment.transactionId); }"
                 ]
               }
             }
           ]
+        },
+        {
+          "name": "Simulate Card Payment (Stripe test card, no frontend needed)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{stripeSecretKey}}", "type": "string" },
+                { "key": "password", "value": "", "type": "string" }
+              ]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "url": {
+              "raw": "https://api.stripe.com/v1/payment_intents/{{stripePaymentIntentId}}/confirm",
+              "protocol": "https",
+              "host": ["api", "stripe", "com"],
+              "path": ["v1", "payment_intents", "{{stripePaymentIntentId}}", "confirm"]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "payment_method", "value": "pm_card_visa", "description": "Stripe's built-in always-succeeds test card. Use pm_card_visa_chargeDeclined to test the failure path instead." },
+                { "key": "automatic_payment_methods[allow_redirects]", "value": "never" }
+              ]
+            },
+            "description": "Calls Stripe's API directly to confirm the PaymentIntent with a test card — this replaces what Stripe.js/Elements would normally do in a browser. Requires 'stripeSecretKey' to be set in the environment (your sk_test_... key). After this succeeds, Stripe sends a real payment_intent.succeeded webhook to whatever endpoint you've configured, which flips the payment to COMPLETED and the booking to PAID."
+          }
         },
         {
           "name": "List My Payment History",

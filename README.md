@@ -220,6 +220,19 @@ Customer can CANCEL at any point before IN_PROGRESS.
    ```
    Select at least `payment_intent.succeeded` and `payment_intent.payment_failed`, then copy that endpoint's signing secret into Render's `STRIPE_WEBHOOK_SECRET` environment variable (this will be a different value from the one the CLI gives you locally).
 
+### Testing the full payment flow without a frontend
+
+Normally a frontend uses Stripe.js/Elements to confirm a PaymentIntent with a card. Without one, you can confirm it directly against Stripe's API using their built-in test payment methods:
+
+```bash
+curl https://api.stripe.com/v1/payment_intents/pi_xxxxxxxxxxxx/confirm \
+  -u sk_test_xxxxxxxxxxxx: \
+  -d payment_method=pm_card_visa \
+  -d "automatic_payment_methods[allow_redirects]=never"
+```
+
+`pm_card_visa` is Stripe's always-succeeds test card (use `pm_card_visa_chargeDeclined` to test the failure path). This is also wired into the Postman collection as **Payments → Simulate Card Payment** — set `stripeSecretKey` in your environment and it'll use the `stripePaymentIntentId` auto-saved by the preceding "Create Payment" request. Once confirmed, Stripe sends a real webhook to whatever endpoint you've configured, which flips the payment to `COMPLETED` and the booking to `PAID`.
+
 ## API Documentation
 
 Import `docs/postman_collection.json` into Postman, plus **one** of the two environment files depending on what you're testing against:
