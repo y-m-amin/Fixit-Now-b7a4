@@ -1,3 +1,4 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import { env } from './env';
 
@@ -8,11 +9,15 @@ declare global {
   var __prisma: PrismaClient | undefined;
 }
 
-export const prisma =
-  global.__prisma ??
-  new PrismaClient({
+function createPrismaClient() {
+  const adapter = new PrismaPg({ connectionString: env.databaseUrl });
+  return new PrismaClient({
+    adapter,
     log: env.isProd ? ['error', 'warn'] : ['error', 'warn', 'query'],
   });
+}
+
+export const prisma = global.__prisma ?? createPrismaClient();
 
 if (!env.isProd) {
   global.__prisma = prisma;

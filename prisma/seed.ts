@@ -1,8 +1,10 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 const ADMIN_EMAIL = 'admin@fixitnow.com';
 const ADMIN_PASSWORD = 'Admin@12345';
