@@ -1,0 +1,16 @@
+# Use this workspace to collaborate
+workspace:
+  id: 8b2474ce-0dcf-417f-8e0d-65440acc1c6a
+
+localResources:
+  collections:
+    - ../postman_collection.json
+  environments:
+    - ../postman_environment.json
+    - ../postman_environment.production.json
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/FixItNow API: d46dffa1-2562-4528-9659-b8b8d2464a83

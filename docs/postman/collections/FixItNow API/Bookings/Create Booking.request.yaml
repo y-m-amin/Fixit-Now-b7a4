@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/api/bookings"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "serviceId": "{{serviceId}}",
+      "scheduledAt": "2026-08-01T10:00:00.000Z",
+      "address": "221B Baker Street",
+      "notes": "Please call before arriving"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json().data;
+      if (data && data.id) { pm.environment.set('bookingId', data.id); }
+    language: text/javascript
+order: 1000

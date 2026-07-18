@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{baseUrl}}/api/technician/bookings"
+method: GET
+headers:
+  Authorization: Bearer {{technicianToken}}
+order: 6000

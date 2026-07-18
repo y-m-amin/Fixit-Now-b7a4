@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "email": "admin@fixitnow.com",
+      "password": "Admin@12345"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json().data;
+      if (data && data.token) { pm.environment.set('adminToken', data.token); }
+    language: text/javascript
+order: 4000

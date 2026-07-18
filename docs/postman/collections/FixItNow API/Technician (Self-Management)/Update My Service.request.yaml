@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{baseUrl}}/api/technician/services/{{serviceId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{technicianToken}}
+body:
+  type: text
+  content: |-
+    {
+      "price": 50
+    }
+order: 4000

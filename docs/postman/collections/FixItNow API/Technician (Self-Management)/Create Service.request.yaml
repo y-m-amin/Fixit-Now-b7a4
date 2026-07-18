@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/api/technician/services"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{technicianToken}}
+body:
+  type: text
+  content: |-
+    {
+      "categoryId": "{{categoryId}}",
+      "title": "Kitchen sink leak repair",
+      "description": "Fix leaking kitchen sink pipes",
+      "price": 45,
+      "priceType": "FIXED"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json().data;
+      if (data && data.id) { pm.environment.set('serviceId', data.id); }
+    language: text/javascript
+order: 3000

@@ -1,8 +1,8 @@
-import Stripe from 'stripe';
 import { BookingStatus, PaymentStatus, Role } from '@prisma/client';
+import Stripe from 'stripe';
 import { prisma } from '../../config/db';
-import { stripe } from '../../config/stripe';
 import { env } from '../../config/env';
+import { stripe } from '../../config/stripe';
 import { ApiError } from '../../utils/ApiError';
 import { CreatePaymentInput, ListPaymentsQuery } from './payments.validation';
 
@@ -11,7 +11,10 @@ function toStripeAmount(amount: number): number {
   return Math.round(amount * 100);
 }
 
-export async function createPaymentForBooking(customerId: string, input: CreatePaymentInput) {
+export async function createPaymentForBooking(
+  customerId: string,
+  input: CreatePaymentInput,
+) {
   const booking = await prisma.booking.findUnique({
     where: { id: input.bookingId },
     include: { service: true, payment: true },
@@ -38,7 +41,7 @@ export async function createPaymentForBooking(customerId: string, input: CreateP
     amount: toStripeAmount(amount),
     currency: 'usd',
     metadata: { bookingId: booking.id, customerId },
-    automatic_payment_methods: { enabled: true },
+    automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
   });
 
   const payment = await prisma.payment.create({
@@ -67,7 +70,11 @@ export async function handleStripeWebhook(rawBody: Buffer, signature: string) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(rawBody, signature, env.stripe.webhookSecret);
+    event = stripe.webhooks.constructEvent(
+      rawBody,
+      signature,
+      env.stripe.webhookSecret,
+    );
   } catch (err) {
     throw ApiError.badRequest(
       `Webhook signature verification failed: ${(err as Error).message}`,
@@ -119,7 +126,11 @@ async function markPaymentFailed(transactionId: string) {
   });
 }
 
-export async function listMyPayments(userId: string, role: Role, query: ListPaymentsQuery) {
+export async function listMyPayments(
+  userId: string,
+  role: Role,
+  query: ListPaymentsQuery,
+) {
   const page = query.page ?? 1;
   const limit = query.limit ?? 20;
 
@@ -144,7 +155,11 @@ export async function listMyPayments(userId: string, role: Role, query: ListPaym
   };
 }
 
-export async function getPaymentById(paymentId: string, userId: string, role: Role) {
+export async function getPaymentById(
+  paymentId: string,
+  userId: string,
+  role: Role,
+) {
   const payment = await prisma.payment.findUnique({
     where: { id: paymentId },
     include: { booking: { include: { service: true } } },

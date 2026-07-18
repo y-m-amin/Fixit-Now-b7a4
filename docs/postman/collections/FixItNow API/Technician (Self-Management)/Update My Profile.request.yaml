@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/api/technician/profile"
+method: PUT
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{technicianToken}}
+body:
+  type: text
+  content: |-
+    {
+      "bio": "10 years of residential plumbing experience.",
+      "experienceYears": 10,
+      "hourlyRate": 25,
+      "skills": ["pipe repair", "leak detection"],
+      "location": "Dhaka"
+    }
+order: 1000

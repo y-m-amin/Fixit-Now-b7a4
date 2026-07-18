@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{baseUrl}}/api/technician/availability"
+method: PUT
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{technicianToken}}
+body:
+  type: text
+  content: |-
+    {
+      "slots": [
+        { "dayOfWeek": 1, "startTime": "09:00", "endTime": "17:00" },
+        { "dayOfWeek": 3, "startTime": "09:00", "endTime": "17:00" }
+      ]
+    }
+order: 2000

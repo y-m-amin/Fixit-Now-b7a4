@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/api/admin/users?page=1&limit=20"
+method: GET
+headers:
+  Authorization: Bearer {{adminToken}}
+queryParams:
+  - key: page
+    value: "1"
+  - key: limit
+    value: "20"
+  - key: role
+    value: CUSTOMER
+    disabled: true
+  - key: status
+    value: ACTIVE
+    disabled: true
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json().data;
+      if (data && data.users && data.users.length) { pm.environment.set('userId', data.users[0].id); }
+    language: text/javascript
+order: 1000

@@ -1,0 +1,29 @@
+name: FixItNow Production (Render)
+values:
+  - key: baseUrl
+    value: 'https://fixit-now-b7a4.onrender.com'
+  - key: token
+    value: ''
+  - key: adminToken
+    value: ''
+  - key: technicianToken
+    value: ''
+  - key: categoryId
+    value: ''
+  - key: serviceId
+    value: ''
+  - key: technicianProfileId
+    value: ''
+  - key: bookingId
+    value: ''
+  - key: paymentId
+    value: ''
+  - key: stripePaymentIntentId
+    value: ''
+  - key: stripeSecretKey
+    value: ''
+    description:
+      content: 'Your sk_test_... key, used only for the ''Simulate Card Payment'' request to confirm PaymentIntents directly against Stripe (replaces a real frontend).'
+      type: text/plain
+  - key: userId
+    value: ''

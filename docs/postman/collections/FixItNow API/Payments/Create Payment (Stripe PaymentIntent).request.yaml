@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{baseUrl}}/api/payments/create"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: text
+  content: |-
+    {
+      "bookingId": "{{bookingId}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json().data;
+      if (data && data.payment && data.payment.id) { pm.environment.set('paymentId', data.payment.id); }
+      if (data && data.payment && data.payment.transactionId) { pm.environment.set('stripePaymentIntentId', data.payment.transactionId); }
+    language: text/javascript
+order: 1000

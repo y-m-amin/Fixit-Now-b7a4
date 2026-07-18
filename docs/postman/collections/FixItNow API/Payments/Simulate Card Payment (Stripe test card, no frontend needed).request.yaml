@@ -1,0 +1,20 @@
+$kind: http-request
+description: Calls Stripe's API directly to confirm the PaymentIntent with a test card — this replaces what Stripe.js/Elements would normally do in a browser. Requires 'stripeSecretKey' to be set in the environment (your sk_test_... key). After this succeeds, Stripe sends a real payment_intent.succeeded webhook to whatever endpoint you've configured, which flips the payment to COMPLETED and the booking to PAID.
+url: https://api.stripe.com/v1/payment_intents/{{stripePaymentIntentId}}/confirm
+method: POST
+headers:
+  Content-Type: application/x-www-form-urlencoded
+body:
+  type: urlencoded
+  content:
+    - key: payment_method
+      value: pm_card_visa
+      description: Stripe's built-in always-succeeds test card. Use pm_card_visa_chargeDeclined to test the failure path instead.
+    - key: automatic_payment_methods[allow_redirects]
+      value: never
+auth:
+  type: basic
+  credentials:
+    username: "{{stripeSecretKey}}"
+    password: ""
+order: 2000

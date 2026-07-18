@@ -1,0 +1,2 @@
+$kind: collection
+description: Backend API for FixItNow, a home services marketplace. Import the companion FixItNow Local environment alongside this collection.

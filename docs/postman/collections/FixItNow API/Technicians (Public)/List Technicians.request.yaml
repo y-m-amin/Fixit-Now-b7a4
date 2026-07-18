@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/api/technicians?page=1&limit=20"
+method: GET
+queryParams:
+  - key: page
+    value: "1"
+  - key: limit
+    value: "20"
+  - key: category
+    value: Plumbing
+    disabled: true
+  - key: location
+    value: Dhaka
+    disabled: true
+  - key: minRating
+    value: "4"
+    disabled: true
+scripts:
+  - type: afterResponse
+    code: |-
+      const data = pm.response.json().data;
+      if (data && data.technicians && data.technicians.length) { pm.environment.set('technicianProfileId', data.technicians[0].id); }
+    language: text/javascript
+order: 1000

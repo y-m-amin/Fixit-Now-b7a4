@@ -1,0 +1,14 @@
+$kind: http-request
+name: Update Booking Status (accept/decline/start/complete)
+url: "{{baseUrl}}/api/technician/bookings/{{bookingId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{technicianToken}}
+body:
+  type: text
+  content: |-
+    {
+      "status": "ACCEPTED"
+    }
+order: 7000
